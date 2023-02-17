@@ -45,4 +45,7 @@ export class Comment {
   })
   @Field()
   user: User;
+
+  @Column()
+  userId: string;
 }

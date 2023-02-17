@@ -40,7 +40,7 @@ export class CommentsService {
   async getPostComments(postId: string): Promise<Comment[]> {
     const comments = await this.CommentRepo.find({
       where: { post: { id: postId } },
-      relations: { user: true },
+      // relations: { user: true },
     });
     if (!comments)
       throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
@@ -50,7 +50,6 @@ export class CommentsService {
   async getReplies(parentId: string): Promise<Comment[]> {
     const replies = await this.CommentRepo.find({
       where: { parentId },
-      relations: { user: true },
     });
     if (!replies)
       throw new HttpException('parentId not found.', HttpStatus.NOT_FOUND);

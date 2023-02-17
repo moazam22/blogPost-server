@@ -49,6 +49,9 @@ export class Post {
   // @Field()
   user: User;
 
+  @Column()
+  userId: string;
+
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 }

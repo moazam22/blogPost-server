@@ -32,6 +32,7 @@ type Post {
   attachmentUrl: String!
   createdAte: DateTime
   updatedAt: DateTime
+  user: User!
 }
 
 type SuccessResponse {

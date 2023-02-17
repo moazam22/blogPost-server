@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { CommentsService } from './comments.service';
 import { Comment } from './entities/comment.entity';
 import {
@@ -10,20 +18,14 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { LogedInUser } from 'src/custom-decoraters/userDecorator';
 import { User } from 'src/users/entities/user.entity';
 import { SuccessResponse } from 'src/utils';
+import { UsersService } from 'src/users/users.service';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
-  constructor(private readonly commentsService: CommentsService) {}
-
-  // crerate a new Comment
-  @Mutation(() => SuccessResponse)
-  @UseGuards(AuthGuard)
-  async createComment(
-    @Args('createCommentInput') createCommentInput: CreateCommentInput,
-    @LogedInUser() user: User,
-  ): Promise<SuccessResponse> {
-    return await this.commentsService.create(createCommentInput, user);
-  }
+  constructor(
+    private readonly commentsService: CommentsService,
+    private readonly userService: UsersService,
+  ) {}
 
   // Get all comments of a post
   @Query(() => [Comment], { name: 'postComments' })
@@ -41,6 +43,24 @@ export class CommentsResolver {
   @Query(() => [Comment], { name: 'replies' })
   async getCommentReplies(@Args('parentId') parentId: string) {
     return await this.commentsService.getReplies(parentId);
+  }
+
+  // resolve-Field for user
+  @ResolveField('user', () => User)
+  async getUser(@Parent() comment: Comment): Promise<User> {
+    const { userId } = comment;
+    const user = await this.userService.findOne(userId);
+    return user;
+  }
+
+  // crerate a new Comment
+  @Mutation(() => SuccessResponse)
+  @UseGuards(AuthGuard)
+  async createComment(
+    @Args('createCommentInput') createCommentInput: CreateCommentInput,
+    @LogedInUser() user: User,
+  ): Promise<SuccessResponse> {
+    return await this.commentsService.create(createCommentInput, user);
   }
 
   //Update a comment

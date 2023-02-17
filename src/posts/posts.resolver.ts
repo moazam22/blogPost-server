@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { PostsService } from './posts.service';
 import { Post } from './entities/post.entity';
 import { CreatePostInput, UpdatePostInput } from './dto/create-post.input';
@@ -7,10 +14,14 @@ import { LogedInUser } from 'src/custom-decoraters/userDecorator';
 import { User } from 'src/users/entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UseGuards } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 
 @Resolver(() => Post)
 export class PostsResolver {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Mutation(() => Post)
   @UseGuards(AuthGuard)
@@ -41,6 +52,13 @@ export class PostsResolver {
   @UseGuards(AuthGuard)
   async searchPosts(@Args('queryString') queryString: string) {
     return await this.postsService.searchPosts(queryString);
+  }
+
+  @ResolveField('user', () => User)
+  async getUser(@Parent() post: Post): Promise<User> {
+    const { userId } = post;
+    const user = await this.userService.findOne(userId);
+    return user;
   }
 
   @Mutation(() => Post)
