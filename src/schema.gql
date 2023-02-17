@@ -1,0 +1,131 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+  passwordResetKey: String
+  passResetKeyExpiry: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Comment {
+  id: String!
+  body: String!
+  parentId: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  user: User!
+}
+
+type Post {
+  id: String!
+  title: String!
+  description: String!
+  readTime: String!
+  attachmentUrl: String!
+  createdAte: DateTime
+  updatedAt: DateTime
+}
+
+type SuccessResponse {
+  status: Float!
+  message: String!
+}
+
+type LoginSuccessResponse {
+  access_token: String!
+}
+
+type ForgotPasswordResponse {
+  status: Float!
+  message: String!
+  resetKey: String!
+}
+
+type Query {
+  hello: String!
+  findAll: [User!]!
+  getUser(token: String!): User!
+  posts: [Post!]!
+  post(id: String!): Post!
+  userPosts(userId: String!): [Post!]!
+  searchPost(queryString: String!): [Post!]!
+  postComments(postId: String!): [Comment!]!
+  comment(id: Int!): Comment!
+  replies(parentId: String!): [Comment!]!
+}
+
+type Mutation {
+  Signup(createUserDto: CreateUserDto!): SuccessResponse!
+  login(loginDto: LoginDto!): LoginSuccessResponse!
+  forgotPassword(forgotPasswordDto: ForgotPasswordDto!): ForgotPasswordResponse!
+  resetPassword(resetPasswordDto: ResetPasswordDto!): SuccessResponse!
+  register(createUserDto: CreateUserDto!): SuccessResponse!
+  updateUser(id: String!, payload: UpdateUserDto!): User!
+  deleteUser(id: String!): SuccessResponse!
+  createPost(createPostInput: CreatePostInput!): Post!
+  updatePost(updatePostInput: UpdatePostInput!): Post!
+  removePost(id: String!): SuccessResponse!
+  createComment(createCommentInput: CreateCommentInput!): SuccessResponse!
+  updateComment(updateCommentInput: UpdateCommentInput!): SuccessResponse!
+  removeComment(id: String!): SuccessResponse!
+}
+
+input CreateUserDto {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+input ForgotPasswordDto {
+  email: String!
+}
+
+input ResetPasswordDto {
+  email: String!
+  password: String!
+  resetKey: String!
+}
+
+input UpdateUserDto {
+  name: String!
+  email: String!
+}
+
+input CreatePostInput {
+  title: String!
+  description: String!
+  attachmentUrl: String
+  readTime: String
+}
+
+input UpdatePostInput {
+  postId: String!
+  title: String
+  description: String
+  attachmentUrl: String
+  readTime: String
+}
+
+input CreateCommentInput {
+  body: String!
+  postId: String!
+  parentId: String
+}
+
+input UpdateCommentInput {
+  id: String!
+  body: String!
+}
