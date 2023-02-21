@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsService } from 'src/posts/posts.service';
 import { User } from 'src/users/entities/user.entity';
-import { SuccessResponse } from 'src/utils';
+import { PostWithComments, SuccessResponse } from 'src/utils';
 import { Repository } from 'typeorm';
 import {
   CreateCommentInput,
@@ -58,6 +58,23 @@ export class CommentsService {
 
   findOne(id: number) {
     return `This action returns a #${id} comment`;
+  }
+
+  async getspecificComments(
+    userId: string,
+    postId: string,
+  ): Promise<Comment[]> {
+    const comments = await this.CommentRepo.createQueryBuilder('comment')
+      .where('comment.userId = :userId', { userId })
+      .andWhere('comment.postId = :postId', { postId })
+      .getMany();
+    return comments;
+  }
+
+  async getPostWithItsComments(postId: string): Promise<PostWithComments> {
+    const post = await this.postService.findOne(postId);
+    const comments = await this.getPostComments(postId);
+    return { post, comments };
   }
 
   async update(

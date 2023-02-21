@@ -40,6 +40,11 @@ type SuccessResponse {
   message: String!
 }
 
+type PostWithComments {
+  post: Post!
+  comments: [Comment!]!
+}
+
 type LoginSuccessResponse {
   access_token: String!
 }
@@ -61,6 +66,8 @@ type Query {
   postComments(postId: String!): [Comment!]!
   comment(id: Int!): Comment!
   replies(parentId: String!): [Comment!]!
+  getspecificComments(userId: String!, postId: String!): [Comment!]!
+  getPostWithItsComments(postId: String!): PostWithComments!
 }
 
 type Mutation {

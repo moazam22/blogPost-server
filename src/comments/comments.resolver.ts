@@ -17,7 +17,7 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { LogedInUser } from 'src/custom-decoraters/userDecorator';
 import { User } from 'src/users/entities/user.entity';
-import { SuccessResponse } from 'src/utils';
+import { PostWithComments, SuccessResponse } from 'src/utils';
 import { UsersService } from 'src/users/users.service';
 
 @Resolver(() => Comment)
@@ -43,6 +43,21 @@ export class CommentsResolver {
   @Query(() => [Comment], { name: 'replies' })
   async getCommentReplies(@Args('parentId') parentId: string) {
     return await this.commentsService.getReplies(parentId);
+  }
+
+  // get all the comments of a specific user on a specific post
+  @Query(() => [Comment], { name: `getspecificComments` })
+  async getspecificComments(
+    @Args('userId') userId: string,
+    @Args('postId') postId: string,
+  ): Promise<Comment[]> {
+    return await this.commentsService.getspecificComments(userId, postId);
+  }
+
+  //Get a specific blog post with its comments and the user who created it
+  @Query(() => PostWithComments, { name: 'getPostWithItsComments' })
+  async getPostWithItsComments(@Args('postId') postId: string) {
+    return await this.commentsService.getPostWithItsComments(postId);
   }
 
   // resolve-Field for user
